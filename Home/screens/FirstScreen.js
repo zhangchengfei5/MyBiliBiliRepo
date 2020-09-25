@@ -18,12 +18,17 @@ export class FirstScreen extends Component{
     render(){
         return(
             <FirstTab.Navigator initialRouteName="Recommend" 
-            tabBarOptions={{
-                activeTintColor:"#FFB6C1",inactiveTintColor:"gray",
-                }}>
+                tabBarOptions={{
+                    activeTintColor:"#FFB6C1",
+                    inactiveTintColor:"gray",
+                    tabStyle:{height:50},
+                    labelStyle:{fontSize:18},
+                    indicatorStyle:{backgroundColor:"#FFB6C1"}
+                }}
+            >
                 <FirstTab.Screen name="Living" component={LivingScreen} options={{title:"直播"}}/>
                 <FirstTab.Screen name="Recommend" component={RecommendScreen} options={{title:"推荐"}}/>
-                <FirstTab.Screen name="Hot" component={HotScreen} options={{title:"追番"}}/>
+                <FirstTab.Screen name="Hot" component={HotScreen} options={{title:"热门"}}/>
                 <FirstTab.Screen name="Animation" component={AnimationScreen} options={{title:"追番"}}/>
             </FirstTab.Navigator>
         );
