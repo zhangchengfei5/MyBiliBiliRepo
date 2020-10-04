@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View,Text,Image,Dimensions,TextInput } from 'react-native';
+import { View,Text,Image,Dimensions,TextInput,TouchableOpacity,ToastAndroid } from 'react-native';
 import {createAppContainer} from "react-navigation";
 import {createMaterialTopTabNavigator} from "react-navigation-tabs"
 import { LivingScreen } from './LivingScreen';
@@ -22,7 +22,9 @@ export class FirstScreen extends Component{
         return(
             <View style={{flex:1,backgroundColor:"#fff"}}>
                 <View style={{flexDirection:"row",alignItems:"center",justifyContent:"center",height:30,marginTop:3,paddingHorizontal:5}}>
-                    <Image source={require('../images/headimage.jpg')} style={{width:30,height:30,borderRadius:15,marginTop:3}}/>
+                    <TouchableOpacity onPress={()=>{}}>
+                        <Image source={require('../images/headimage.jpg')} style={{width:30,height:30,borderRadius:15,marginTop:3}}/>
+                    </TouchableOpacity>
                     <View style={{backgroundColor:'#dcdcdc',borderRadius:12,marginHorizontal:8,flexDirection:"row",
                         marginTop:3,flex:1}}>
                         <Image source={require('../images/bdf.png')} style={{width:20,height:20,alignSelf:"center"}}/>
@@ -34,8 +36,12 @@ export class FirstScreen extends Component{
                             }}
                             value={this.state.search}/>
                     </View>
-                    <Image source={require('../images/game.png')} style={{width:24,height:24,marginTop:3,marginRight:8}}/>
-                    <Image source={require('../images/mail.png')} style={{width:22,height:22,marginTop:3}}/>
+                    <TouchableOpacity onPress={()=>{}}>
+                        <Image source={require('../images/game.png')} style={{width:24,height:24,marginTop:3,marginRight:8}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{ToastAndroid.show("请先登录",ToastAndroid.SHORT)}}>
+                        <Image source={require('../images/mail.png')} style={{width:22,height:22,marginTop:3}}/>                        
+                    </TouchableOpacity>
                 </View>
                 <FirstTab/>
             </View>

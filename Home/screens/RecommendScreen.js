@@ -10,26 +10,28 @@ export class RecommendScreen extends Component{
     constructor(props){
         super(props);
     }
-    _keyExtractor=(item,index)=>item.key
+    _keyExtractor=(item)=>item.key
     renderItem = ({item}) => (
-        <Item 
-            videoImage={item.videoImage}
-            videoName={item.videoName}
-            recommendReason={item.recommendReason}
-            recommendTitle={item.recommendTitle}
-            broadcastnum={item.broadcastnum}
-            barragenum={item.barragenum}
-            videoTime={item.videoTime}
-        />
+        <TouchableOpacity style={{flex:1}}
+            onPress={()=>{}}>
+            <Item 
+                videoImage={item.videoImage}
+                videoName={item.videoName}
+                recommendReason={item.recommendReason}
+                recommendTitle={item.recommendTitle}
+                broadcastnum={item.broadcastnum}
+                barragenum={item.barragenum}
+                videoTime={item.videoTime}
+            />
+        </TouchableOpacity>
     );
     render(){
         return(
             <View style={styles.container}>
-                 
                 <View style={{flex:1,padding:3}}>
                     <FlatList
                         ListHeaderComponent={
-                            <ScrollView style={{paddingHorizontal:6,marginTop:6,maxHeight:200}}>  
+                            <ScrollView style={{paddingHorizontal:3,marginTop:6,maxHeight:200}}>  
                                 <Swiper
                                     style={styles.swiper}
                                     autoplay   
@@ -46,7 +48,6 @@ export class RecommendScreen extends Component{
                         horizontal={false}
                         numColumns={2}
                         showsVerticalScrollIndicator={false}
-                        // data={[{name:"万族之劫",key:'a'},{name:"全球高武",key:'b'},{name:"我真没想重生啊",key:'c'},{name:"第一序列",key:'d'},{name:"重燃",key:'e'},{name:"诡秘之主",key:'f'}]}
                         data={[
                             {videoImage:videoImage[0],videoName:videoName[0],recommendReason:recommendReason[0],recommendTitle:recommendTitle[0],broadcastnum:broadcastnum[0],barragenum:barragenum[0],videoTime:videoTime[0],key:'a'},
                             {videoImage:videoImage[1],videoName:videoName[1],recommendReason:recommendReason[1],recommendTitle:recommendTitle[1],broadcastnum:broadcastnum[1],barragenum:barragenum[1],videoTime:videoTime[1],key:'b'},
@@ -56,14 +57,6 @@ export class RecommendScreen extends Component{
                             {videoImage:videoImage[5],videoName:videoName[5],recommendReason:recommendReason[5],recommendTitle:recommendTitle[5],broadcastnum:broadcastnum[5],barragenum:barragenum[5],videoTime:videoTime[5],key:'f'},
                         ]}
                         renderItem={this.renderItem}
-                        // renderItem={({index,item})=>{
-                        //     <ItemView
-                        //         videoImage={item.videoImage}
-                        //         videoName={item.videoName}
-                        //         recommendReason={item.recommendReason}
-                        //         recommendTitle={item.recommendTitle}
-                        //     /> 
-                        // }}
                         keyExtractor={this._keyExtractor}
                     />
                 </View>
@@ -94,31 +87,6 @@ const Item = ({videoImage,videoName,recommendReason,recommendTitle,broadcastnum,
         </View>
     )
 }
-
-// class ItemView extends Component{
-//     render(){
-//         return(
-//             <View style={styles.videoStyle}>
-//                 <Image source={this.props.videoImage} style={styles.imgStyle}/>
-//                 <View style={{position:"absolute",flexDirection:"row",flex:1,top:77,alignItems:"center",padding:5}}>
-//                     <Image source={require('../images/broadcastnum.png')} style={{height:13,width:13}}/>
-//                     <Text style={{color:"#fff",fontSize:8,marginLeft:3}}>8623</Text>
-//                     <Image source={require('../images/barragenum.png')} style={{height:13,width:13,marginLeft:10}}/>
-//                     <Text style={{color:"#fff",fontSize:8,marginLeft:3}}>325</Text>
-//                     <View style={{flexDirection:"row-reverse",flex:1}}>
-//                         <Text style={{color:"#fff",fontSize:8}}>6:53</Text>
-//                     </View>
-//                 </View>
-//                 <Text numberOfLines={2} style={styles.textStyle}>{this.props.videoName}</Text>
-//                 <View style={{flexDirection:"row",padding:7,alignItems:"center",flex:1}}>
-//                     <Text style={styles.recommendReasonStyle}>{this.props.recommendReason}</Text>
-//                     <Text style={styles.recommendTitleStyle}>{this.props.recommendTitle}</Text>
-//                     <Image source={require('../images/ellipsis.png')} style={{height:10,width:10}}/>                            
-//                 </View>
-//             </View>
-//         )
-//     }
-// }
 
 const styles = StyleSheet.create({
     container:{
