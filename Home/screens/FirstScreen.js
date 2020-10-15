@@ -22,7 +22,7 @@ export class FirstScreen extends Component{
         return(
             <View style={{flex:1,backgroundColor:"#fff"}}>
                 <View style={{flexDirection:"row",alignItems:"center",justifyContent:"center",height:30,marginTop:3,paddingHorizontal:5}}>
-                    <TouchableOpacity onPress={()=>{}}>
+                    <TouchableOpacity onPress={()=>{ToastAndroid.show("请先登录",ToastAndroid.SHORT)}}>
                         <Image source={require('../images/headimage.jpg')} style={{width:30,height:30,borderRadius:15,marginTop:3}}/>
                     </TouchableOpacity>
                     <View style={{backgroundColor:'#dcdcdc',borderRadius:12,marginHorizontal:8,flexDirection:"row",
@@ -39,7 +39,7 @@ export class FirstScreen extends Component{
                     <TouchableOpacity onPress={()=>{}}>
                         <Image source={require('../images/game.png')} style={{width:24,height:24,marginTop:3,marginRight:8}}/>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>{ToastAndroid.show("请先登录",ToastAndroid.SHORT)}}>
+                    <TouchableOpacity onPress={()=>{}}>
                         <Image source={require('../images/mail.png')} style={{width:22,height:22,marginTop:3}}/>                        
                     </TouchableOpacity>
                 </View>
