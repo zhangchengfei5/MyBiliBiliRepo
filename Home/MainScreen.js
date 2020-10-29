@@ -6,6 +6,7 @@ import { FirstScreen } from './screens/FirstScreen';
 import { PartitionScreen } from './screens/PartitionScreen';
 import { UserScreen } from './screens/UserScreen';
 import { DynamicScreen } from './screens/DynamicScreen';
+import { themeColor } from './data';
 
 
 export default TabBarNavigator = createAppContainer(

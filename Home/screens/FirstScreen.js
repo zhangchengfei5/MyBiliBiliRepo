@@ -45,7 +45,6 @@ export class FirstScreen extends Component{
                 </View>
                 <FirstTab/>
             </View>
-            
         )
     }
 }
