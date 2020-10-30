@@ -15,13 +15,13 @@ class ItemView extends Component {
         return (
             <View style={styles.videoStyle}>
                 <Image source={{ uri: this.props.ad_info != null ? this.props.item.ad_info.creative_content.image_url : this.props.videoImage }} style={styles.imgStyle} />
-                <View style={{ display: this.props.isAD ? "none" : "flex", position: "absolute", flexDirection: "row", flex: 1, top: 88, alignItems: "center", paddingHorizontal: 7 }}>
-                    <Image source={require('../images/broadcastnum.png')} style={{ height: 13, width: 13 }} />
-                    <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.broadcastnum}</Text>
-                    <Image source={tagType(this.props.recommendReason)} style={{ height: 13, width: 13, marginLeft: 10, marginBottom: null }} />
-                    <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.barragenum}</Text>
+                <View style={{ display: this.props.isCreate ? "none" : "flex", position: "absolute", flexDirection: "row", flex: 1, top: 88, alignItems: "center", paddingHorizontal: 7 }}>
+                    <Image source={iconType(this.props.cover_left_icon_1)} style={{ height: 13, width: 13 }} />
+                    <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.cover_left_text_1}</Text>
+                    <Image source={iconType(this.props.cover_left_icon_2)} style={{ height: 13, width: 13, marginLeft: 10, marginBottom: null }} />
+                    <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.cover_left_text_2}</Text>
                     <View style={{ flexDirection: "row-reverse", flex: 1 }}>
-                        <Text style={{ color: "#fff", fontSize: 9 }}>{this.props.videoTime}</Text>
+                        <Text style={{ color: "#fff", fontSize: 9 }}>{this.props.cover_right_text}</Text>
                     </View>
                 </View>
                 <Text numberOfLines={2} style={styles.videoNameStyle}>{this.props.ad_info != null ? this.props.item.ad_info.creative_content.title : this.props.videoName}</Text>
@@ -29,44 +29,50 @@ class ItemView extends Component {
                 <View style={{ display: this.props.isAd ? "none" : "flex", flexDirection: "row", padding: 7, alignItems: "center" }}>
                     <Text numberOfLines={1}
                         style={{
-                            backgroundColor: "#FFF1ED",
-                            color: "#FF6633",
+                            backgroundColor: this.props.isBadeg ? null : "#FFF1ED",
+                            color: this.props.isBadeg ? "#FB7299" : "#FF6633",
                             fontSize: 9,
                             alignSelf: "center",
-                            padding: 2,
+                            textAlign: "center",
+                            textAlignVertical: "center",
+                            paddingVertical:1,
+                            paddingHorizontal:3,
                             borderRadius: 2,
-                            display: this.props.recommendReason != null ? "flex" : "none"
-                        }}>{this.props.recommendReason}</Text>
+                            borderColor: this.props.isBadeg ? "#FB7299" : null,
+                            borderWidth: this.props.isBadeg ? 0.5 : 0,
+                            display: this.props.recommendReason != null || this.props.isBadeg == true ? "flex" : "none"
+                        }}>{this.props.isBadeg ? this.props.item.badge_style.text : this.props.recommendReason}</Text>
                     <Text numberOfLines={1} style={{
                         flex: 1,
                         color: "#bfbfbf",
-                        marginLeft: this.props.recommendReason != null ? 5 : 0,
+                        marginLeft: this.props.recommendReason != null || this.props.isBadeg == true ? 5 : 0,
                         fontSize: 12,
                     }}>{this.props.isDesc ? this.props.item.desc_button.text : this.props.recommendDesc}</Text>
-                    <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10 }} />
+                    <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10,marginLeft:10 }} />
                 </View>
                 {/* 这是广告类条目 */}
                 <View style={{ display: this.props.isAd ? "flex" : "none", flexDirection: "row", padding: 7, alignItems: "center" }}>
                     <Text numberOfLines={1}
                         style={{
-                            backgroundColor: this.props.isGuangGao ? null : "#F4F4F4",
-                            color: "#999999",
+                            backgroundColor: this.props.isCreate ? "#F4F4F4" : null,
+                            color: this.props.isGuangGao || this.props.isCreate ? "#999999" : "#FB7299",
                             fontSize: 9,
                             alignSelf: "center",
                             textAlign: "center",
                             textAlignVertical: "center",
-                            padding: 2,
+                            paddingVertical:1,
+                            paddingHorizontal:3,
                             borderRadius: 2,
-                            borderColor: this.props.isGuangGao ? "#999999" : null,
-                            borderWidth: this.props.isGuangGao ? 0.5 : 0
+                            borderColor: this.props.isGuangGao || this.props.isCreate ? "#999999" : "#FB7299",
+                            borderWidth: this.props.isCreate ? 0 : 0.5
                         }}>{this.props.ad_info != null ? this.props.item.ad_info.extra.card.ad_tag_style.text : null}</Text>
                     <Text numberOfLines={1} style={{
                         flex: 1,
                         color: "#bfbfbf",
                         marginLeft: 5,
                         fontSize: 12,
-                    }}>{this.props.ad_info != null ? this.props.isGuangGao == false || this.props.item.ad_info.creative_content.description == null ? null : this.props.item.ad_info.creative_content.description : null}</Text>
-                    <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10 }} />
+                    }}>{this.props.ad_info != null ? this.props.item.ad_info.creative_content.description : null}</Text>
+                    <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10,marginLeft:10 }} />
                 </View>
 
             </View>
@@ -109,27 +115,39 @@ export class RecommendScreen extends Component {
                         numColumns={2}
                         data={this.state.videoArr}
                         renderItem={({ item }) => {
+                            var isItem = item != null ? item : null
                             // 判断是不是广告类
                             var isAD = item.ad_info != null ? true : false
-                            var isRecm = item.rcmd_reason != null ? true : false
-                            var isRcDesc = item.desc != null ? true : false
-                            var isInline = item.like_button != null ? true : false
                             // 判断是不是广告类条目的广告
                             var isGuangGao = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
+                            // 判断是不是广告类条目的创作推广
+                            var isCreate = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
+                            // 判断是不是视频类条目的推荐视频、已关注
+                            var isRecm = item.rcmd_reason != null ? true : false
+                            // 判断是不是视频类条目的番剧、文章、直播
+                            var isBadeg = item.badge != null ? true : false
+                            // 判断是否有推荐描述
+                            var isRcDesc = item.desc != null ? true : false
+                            // 判断是不是在线观看视频
+                            var isInline = item.like_button != null ? true : false
                             return (
                                 <ItemView
-                                    item={item}
+                                    item={isItem}
                                     isAd={isAD}
+                                    isBadeg={isAD == true || isBadeg == false ? false : true}
                                     ad_info={isAD ? item.ad_info : null}
                                     isDesc={isAD == true || isRecm == true || isInline ? false : true}
                                     isGuangGao={isAD == false || isGuangGao == false ? false : true}
+                                    isCreate={isAD == false || isCreate == false ? false : true}
                                     videoImage={isAD ? null : item.cover}
                                     videoName={isAD ? null : item.title}
                                     recommendReason={isAD == true || isRecm == false ? null : item.rcmd_reason}
                                     recommendDesc={isAD == true || isRcDesc == false ? null : item.desc}
-                                    broadcastnum={isAD ? null : item.cover_left_text_1}
-                                    barragenum={isAD ? null : item.cover_left_text_2}
-                                    videoTime={isAD ? null : item.cover_right_text}
+                                    cover_left_icon_1={isAD ? null : item.cover_left_icon_1}
+                                    cover_left_icon_2={isAD ? null : item.cover_left_icon_2}
+                                    cover_left_text_1={isAD ? null : item.cover_left_text_1}
+                                    cover_left_text_2={isAD ? null : item.cover_left_text_2}
+                                    cover_right_text={isAD ? null : item.cover_right_text}
                                 />
                             )
                         }}
@@ -165,13 +183,32 @@ export class RecommendScreen extends Component {
     }
 }
 
-function tagType(recommendReason) {
-    if (recommendReason == "番剧") {
-        icon = require('../images/collectnum.png')
-    } else if (recommendReason == "直播") {
-        icon = require('../images/audience.png')
-    } else {
-        icon = require('../images/barragenum.png')
+function iconType(icon_id) {
+    switch (icon_id) {
+        case 1:
+            icon = require('../images/broadcastnum.png')
+            break;
+        case 2:
+            icon = require('../images/audience.png')
+            break;
+        case 3:
+            icon = require('../images/barragenum.png')
+            break;
+        case 4:
+            icon = require('../images/collectnum.png')
+            break;
+        // case 5:
+        //     icon = require('../images/collectnum.png')
+        //     break;
+        case 6:
+            icon = require('../images/readnum.png')
+            break;
+        case 7:
+            icon = require('../images/discussnum.png')
+            break;
+        default:
+            icon = null
+            break;
     }
     return icon
 }
@@ -228,7 +265,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 105,
         borderTopLeftRadius: 3,
-        borderTopRightRadius: 3
+        borderTopRightRadius: 3,
     },
     videoNameStyle: {
         paddingHorizontal: 7,
