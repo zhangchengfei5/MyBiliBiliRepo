@@ -47,7 +47,7 @@ class ItemView extends Component {
                         color: "#bfbfbf",
                         marginLeft: this.props.recommendReason != null || this.props.isBadeg == true ? 5 : 0,
                         fontSize: 12,
-                    }}>{this.props.isDesc ? this.props.item.desc_button.text : this.props.recommendDesc}</Text>
+                    }}>{this.props.isDesc && this.props.item.desc_button.text != null ? this.props.item.desc_button.text : this.props.recommendDesc}</Text>
                     <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10,marginLeft:10 }} />
                 </View>
                 {/* 这是广告类条目 */}
@@ -136,7 +136,7 @@ export class RecommendScreen extends Component {
                                     isAd={isAD}
                                     isBadeg={isAD == true || isBadeg == false ? false : true}
                                     ad_info={isAD ? item.ad_info : null}
-                                    isDesc={isAD == true || isRecm == true || isInline ? false : true}
+                                    isDesc={isAD == true || isRecm == true || isInline == true ? false : true}
                                     isGuangGao={isAD == false || isGuangGao == false ? false : true}
                                     isCreate={isAD == false || isCreate == false ? false : true}
                                     videoImage={isAD ? null : item.cover}
