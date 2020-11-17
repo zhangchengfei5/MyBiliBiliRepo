@@ -13,69 +13,72 @@ var that;
 class ItemView extends Component {
     render() {
         return (
-            <View style={styles.videoStyle}>
-                <Image source={{ uri: this.props.ad_info != null ? this.props.item.ad_info.creative_content.image_url : this.props.videoImage }} style={styles.imgStyle} />
-                <View style={{ display: this.props.isCreate ? "none" : "flex", position: "absolute", flexDirection: "row", flex: 1, top: 88, alignItems: "center", paddingHorizontal: 7 }}>
-                    <Image source={iconType(this.props.cover_left_icon_1)} style={{ height: 13, width: 13 }} />
-                    <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.cover_left_text_1}</Text>
-                    <Image source={iconType(this.props.cover_left_icon_2)} style={{ height: 13, width: 13, marginLeft: 10, marginBottom: null }} />
-                    <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.cover_left_text_2}</Text>
-                    <View style={{ flexDirection: "row-reverse", flex: 1 }}>
-                        <Text style={{ color: "#fff", fontSize: 9 }}>{this.props.cover_right_text}</Text>
+            <TouchableOpacity style={{flex:1}} onPress={()=>{}}>
+                <View style={styles.videoStyle}>
+                    {/* this.props.ad_info != null ? this.props.item.ad_info.creative_content.image_url : this.props.videoImage */}
+                    <Image source={{ uri: this.props.videoImage }} style={styles.imgStyle} />
+                    <View style={{ display: this.props.isCreate ? "none" : "flex", position: "absolute", flexDirection: "row", flex: 1, top: 88, alignItems: "center", paddingHorizontal: 7, backgroundColor: 'rgba(0,0,0,0.03)' }}>
+                        <Image source={iconType(this.props.cover_left_icon_1)} style={{ height: 13, width: 13 }} />
+                        <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.cover_left_text_1}</Text>
+                        <Image source={iconType(this.props.cover_left_icon_2)} style={{ height: 13, width: 13, marginLeft: 10, marginBottom: null }} />
+                        <Text style={{ color: "#fff", fontSize: 9, marginLeft: 3 }}>{this.props.cover_left_text_2}</Text>
+                        <View style={{ flexDirection: "row-reverse", flex: 1 }}>
+                            <Text style={{ color: "#fff", fontSize: 9 }}>{this.props.cover_right_text}</Text>
+                        </View>
+                    </View>
+                    {/* this.props.ad_info != null ? this.props.item.ad_info.creative_content.title : this.props.videoName */}
+                    <Text numberOfLines={2} style={styles.videoNameStyle}>{this.props.videoName}</Text>
+                    {/* 这是视频类条目 */}
+                    <View style={{ display: this.props.isAd ? "none" : "flex", flexDirection: "row", padding: 7, alignItems: "center" }}>
+                        <Text numberOfLines={1}
+                            style={{
+                                backgroundColor: this.props.isBadeg ? null : "#FFF1ED",
+                                color: this.props.isBadeg ? "#FB7299" : "#FF6633",
+                                fontSize: 9,
+                                alignSelf: "center",
+                                textAlign: "center",
+                                textAlignVertical: "center",
+                                paddingVertical: 1,
+                                paddingHorizontal: 3,
+                                borderRadius: 2,
+                                borderColor: this.props.isBadeg ? "#FB7299" : null,
+                                borderWidth: this.props.isBadeg ? 0.5 : 0,
+                                display: this.props.recommendReason != null || this.props.isBadeg == true ? "flex" : "none"
+                            }}>{this.props.isBadeg ? this.props.item.badge_style.text : this.props.recommendReason}</Text>
+                        <Text numberOfLines={1} style={{
+                            flex: 1,
+                            color: "#bfbfbf",
+                            marginLeft: this.props.recommendReason != null || this.props.isBadeg == true ? 5 : 0,
+                            fontSize: 12,
+                        }}>{this.props.isDesc && this.props.item.desc_button.text != null ? this.props.item.desc_button.text : this.props.recommendDesc}</Text>
+                        <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10, marginLeft: 10 }} />
+                    </View>
+                    {/* 这是广告类条目 */}
+                    <View style={{ display: this.props.isAd ? "flex" : "none", flexDirection: "row", padding: 7, alignItems: "center" }}>
+                        <Text numberOfLines={1}
+                            style={{
+                                backgroundColor: this.props.isCreate ? "#F4F4F4" : null,
+                                color: this.props.isGuangGao || this.props.isCreate ? "#999999" : "#FB7299",
+                                fontSize: 9,
+                                alignSelf: "center",
+                                textAlign: "center",
+                                textAlignVertical: "center",
+                                paddingVertical: 1,
+                                paddingHorizontal: 3,
+                                borderRadius: 2,
+                                borderColor: this.props.isGuangGao || this.props.isCreate ? "#999999" : "#FB7299",
+                                borderWidth: this.props.isCreate ? 0 : 0.5
+                            }}>{this.props.ad_info != null ? this.props.item.ad_info.extra.card.ad_tag_style.text : null}</Text>
+                        <Text numberOfLines={1} style={{
+                            flex: 1,
+                            color: "#bfbfbf",
+                            marginLeft: 5,
+                            fontSize: 12,
+                        }}>{this.props.ad_info != null ? this.props.item.ad_info.creative_content.description : null}</Text>
+                        <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10, marginLeft: 10 }} />
                     </View>
                 </View>
-                <Text numberOfLines={2} style={styles.videoNameStyle}>{this.props.ad_info != null ? this.props.item.ad_info.creative_content.title : this.props.videoName}</Text>
-                {/* 这是视频类条目 */}
-                <View style={{ display: this.props.isAd ? "none" : "flex", flexDirection: "row", padding: 7, alignItems: "center" }}>
-                    <Text numberOfLines={1}
-                        style={{
-                            backgroundColor: this.props.isBadeg ? null : "#FFF1ED",
-                            color: this.props.isBadeg ? "#FB7299" : "#FF6633",
-                            fontSize: 9,
-                            alignSelf: "center",
-                            textAlign: "center",
-                            textAlignVertical: "center",
-                            paddingVertical:1,
-                            paddingHorizontal:3,
-                            borderRadius: 2,
-                            borderColor: this.props.isBadeg ? "#FB7299" : null,
-                            borderWidth: this.props.isBadeg ? 0.5 : 0,
-                            display: this.props.recommendReason != null || this.props.isBadeg == true ? "flex" : "none"
-                        }}>{this.props.isBadeg ? this.props.item.badge_style.text : this.props.recommendReason}</Text>
-                    <Text numberOfLines={1} style={{
-                        flex: 1,
-                        color: "#bfbfbf",
-                        marginLeft: this.props.recommendReason != null || this.props.isBadeg == true ? 5 : 0,
-                        fontSize: 12,
-                    }}>{this.props.isDesc && this.props.item.desc_button.text != null ? this.props.item.desc_button.text : this.props.recommendDesc}</Text>
-                    <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10,marginLeft:10 }} />
-                </View>
-                {/* 这是广告类条目 */}
-                <View style={{ display: this.props.isAd ? "flex" : "none", flexDirection: "row", padding: 7, alignItems: "center" }}>
-                    <Text numberOfLines={1}
-                        style={{
-                            backgroundColor: this.props.isCreate ? "#F4F4F4" : null,
-                            color: this.props.isGuangGao || this.props.isCreate ? "#999999" : "#FB7299",
-                            fontSize: 9,
-                            alignSelf: "center",
-                            textAlign: "center",
-                            textAlignVertical: "center",
-                            paddingVertical:1,
-                            paddingHorizontal:3,
-                            borderRadius: 2,
-                            borderColor: this.props.isGuangGao || this.props.isCreate ? "#999999" : "#FB7299",
-                            borderWidth: this.props.isCreate ? 0 : 0.5
-                        }}>{this.props.ad_info != null ? this.props.item.ad_info.extra.card.ad_tag_style.text : null}</Text>
-                    <Text numberOfLines={1} style={{
-                        flex: 1,
-                        color: "#bfbfbf",
-                        marginLeft: 5,
-                        fontSize: 12,
-                    }}>{this.props.ad_info != null ? this.props.item.ad_info.creative_content.description : null}</Text>
-                    <Image source={require('../images/ellipsis.png')} style={{ height: 10, width: 10,marginLeft:10 }} />
-                </View>
-
-            </View>
+            </TouchableOpacity>
         )
     }
 }
@@ -88,13 +91,9 @@ export class RecommendScreen extends Component {
             bannerArr: []
         }
     }
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={{ flex: 1, padding: 3 }}>
-                    <FlatList
-                        ListHeaderComponent={
-                            <ScrollView style={{ paddingHorizontal: 3, marginTop: 6, maxHeight: 170 }}>
+    renderBanner=()=>{
+        return(
+            <ScrollView style={{ paddingHorizontal: 3, marginTop: 6, maxHeight: 170 }}>
                                 <Swiper
                                     style={styles.swiper}
                                     key={this.state.bannerArr.length}
@@ -110,18 +109,32 @@ export class RecommendScreen extends Component {
                                     )}
                                 </Swiper>
                             </ScrollView>
-                        }
+        )
+    }
+    render() {
+        return (
+            <View style={styles.container}>
+                <View style={{ flex: 1, padding: 3 }}>
+                    <FlatList
+                        ListHeaderComponent={this.renderBanner}
                         initialNumToRender={8}
                         numColumns={2}
                         data={this.state.videoArr}
                         renderItem={({ item }) => {
                             var isItem = item != null ? item : null
                             // 判断是不是广告类
-                            var isAD = item.ad_info != null ? true : false
-                            // 判断是不是广告类条目的广告
-                            var isGuangGao = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
-                            // 判断是不是广告类条目的创作推广
-                            var isCreate = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
+                            var isAD = item.ad_info != null && item.ad_info.extra ? true : false
+                            // 判断是不是广告类条目的广告 = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
+                            var isGuangGao
+                            // 判断是不是广告类条目的创作推广 = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
+                            var isCreate
+                            if (isAD == true) {
+                                isGuangGao = item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
+                                isCreate = item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
+                            } else {
+                                isGuangGao = false
+                                isCreate = false
+                            }
                             // 判断是不是视频类条目的推荐视频、已关注
                             var isRecm = item.rcmd_reason != null ? true : false
                             // 判断是不是视频类条目的番剧、文章、直播
@@ -139,8 +152,8 @@ export class RecommendScreen extends Component {
                                     isDesc={isAD == true || isRecm == true || isInline == true ? false : true}
                                     isGuangGao={isAD == false || isGuangGao == false ? false : true}
                                     isCreate={isAD == false || isCreate == false ? false : true}
-                                    videoImage={isAD ? null : item.cover}
-                                    videoName={isAD ? null : item.title}
+                                    videoImage={isAD ? item.ad_info.creative_content.image_url : item.cover}
+                                    videoName={isAD ? item.ad_info.creative_content.title : item.title}
                                     recommendReason={isAD == true || isRecm == false ? null : item.rcmd_reason}
                                     recommendDesc={isAD == true || isRcDesc == false ? null : item.desc}
                                     cover_left_icon_1={isAD ? null : item.cover_left_icon_1}
@@ -234,7 +247,8 @@ const styles = StyleSheet.create({
         bottom: 6,
         left: 6,
         color: "#fff",
-        fontWeight: "bold"
+        fontWeight: "bold",
+        backgroundColor: 'rgba(0,0,0,0.03)'
     },
     dotStyle: {
         width: 4,
@@ -264,8 +278,9 @@ const styles = StyleSheet.create({
     imgStyle: {
         width: "100%",
         height: 105,
-        borderTopLeftRadius: 3,
-        borderTopRightRadius: 3,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+        resizeMode: "stretch"
     },
     videoNameStyle: {
         paddingHorizontal: 7,

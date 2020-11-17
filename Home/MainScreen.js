@@ -9,7 +9,7 @@ import { DynamicScreen } from './screens/DynamicScreen';
 import { themeColor } from './data';
 
 
-export default TabBarNavigator = createAppContainer(
+export const TabBarNavigator = createAppContainer(
   createBottomTabNavigator(
     {
       FirstScreen:{

@@ -1,3 +1,5 @@
+export const dataAd = []
+
 export const themeColor = ['#E67F9F']
 
 export const recommendList = [
