@@ -4,8 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { SplashAdScreen } from './SplashAdScreen';
-import { TabBarNavigator } from './MainScreen';
-import { dataAd } from './data';
+import { TabBarNavigator } from '../MainScreen';
+import { dataAd } from '../data';
 
 export class SplashBrandScreen extends Component {
     constructor(props) {

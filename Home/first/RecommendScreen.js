@@ -1,19 +1,24 @@
 import React, { Component } from 'react';
 import {
     View, Text, Image, StyleSheet, Dimensions,
-    ScrollView, FlatList, TouchableOpacity, PixelRatio
+    ScrollView, FlatList, TouchableOpacity, PixelRatio, RefreshControl
 } from 'react-native';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
 import Swiper from 'react-native-swiper';
-import { recommendList } from '../data';
-import { TabBarItem } from 'react-native-tab-view';
+import { themeColor } from '../data';
+import { VideoPlay } from '../videos/VideoPlay';
 // 获取屏幕的宽高
 var { width, height } = Dimensions.get('window')
-var that;
 
 class ItemView extends Component {
     render() {
         return (
-            <TouchableOpacity style={{flex:1}} onPress={()=>{}}>
+            <TouchableOpacity style={{ flex: 1 }} onPress={() => {
+                this.props.navigation.navigate('VideoPlay', {
+                    param: this.props.param
+                })
+            }}>
                 <View style={styles.videoStyle}>
                     {/* this.props.ad_info != null ? this.props.item.ad_info.creative_content.image_url : this.props.videoImage */}
                     <Image source={{ uri: this.props.videoImage }} style={styles.imgStyle} />
@@ -83,6 +88,8 @@ class ItemView extends Component {
     }
 }
 
+// 是否刷新了
+var isRefresh = false
 export class RecommendScreen extends Component {
     constructor(props) {
         super(props);
@@ -91,24 +98,80 @@ export class RecommendScreen extends Component {
             bannerArr: []
         }
     }
-    renderBanner=()=>{
-        return(
-            <ScrollView style={{ paddingHorizontal: 3, marginTop: 6, maxHeight: 170 }}>
-                                <Swiper
-                                    style={styles.swiper}
-                                    key={this.state.bannerArr.length}
-                                    autoplay
-                                    showsButtons={false} height={170} autoplayTimeout={3}
-                                    horizontal={true} dotStyle={styles.dotStyle} loop={true} removeClippedSubviews={true}
-                                    activeDotStyle={styles.activeDotStyle} paginationStyle={styles.paginationStyle}>
-                                    {this.state.bannerArr.map((item, index) =>
-                                        <View key={index}>
-                                            <Image source={{ uri: item.image }} style={styles.bannerStyle} resizeMode="stretch" />
-                                            <Text style={styles.bannerTitleStyle}>{item.title}</Text>
-                                        </View>
-                                    )}
-                                </Swiper>
-                            </ScrollView>
+    // 推荐页轮播
+    renderBanner = () => {
+        if (!isRefresh && this.state.bannerArr != null) {
+            return (
+                <ScrollView style={{ paddingHorizontal: 3, marginTop: 6, maxHeight: 170 }}>
+                    <Swiper
+                        style={styles.swiper}
+                        key={this.state.bannerArr.length}
+                        autoplay
+                        showsButtons={false} height={170} autoplayTimeout={3}
+                        horizontal={true} dotStyle={styles.dotStyle} loop={true} removeClippedSubviews={true}
+                        activeDotStyle={styles.activeDotStyle} paginationStyle={styles.paginationStyle}>
+                        {this.state.bannerArr.map((item, index) =>
+                            <View key={index}>
+                                <Image source={{ uri: item.image }} style={styles.bannerStyle} resizeMode="stretch" />
+                                <Text style={styles.bannerTitleStyle}>{item.title}</Text>
+                            </View>
+                        )}
+                    </Swiper>
+                </ScrollView>
+            )
+        } else {
+            return null
+        }
+    }
+    // 推荐页视频
+    renderRecommendItem = ({ item }) => {
+        var isItem = item != null ? item : null
+        // 判断是不是广告类
+        var isAD = item.ad_info != null && item.ad_info.extra ? true : false
+        // 判断是不是广告类条目的广告 = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
+        var isGuangGao
+        // 判断是不是广告类条目的创作推广 = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
+        var isCreate
+        if (isAD == true) {
+            isGuangGao = item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
+            isCreate = item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
+        } else {
+            isGuangGao = false
+            isCreate = false
+        }
+        // 判断是不是视频类条目的推荐视频、已关注
+        var isRecm = item.rcmd_reason != null ? true : false
+        // 判断是不是视频类条目的番剧、文章、直播
+        var isBadeg = item.badge != null ? true : false
+        // 判断是否有推荐描述
+        var isRcDesc = item.desc != null ? true : false
+        // 判断是不是在线观看视频
+        var isInline = item.like_button != null ? true : false
+        return (
+            <ItemView
+                navigation={this.props.navigation}
+                param={item.param}
+                item={isItem}
+                isAd={isAD}
+                isBadeg={isAD == true || isBadeg == false ? false : true}
+                ad_info={isAD ? item.ad_info : null}
+                isDesc={isAD == true || isRecm == true || isInline == true ? false : true}
+                isGuangGao={isAD == false || isGuangGao == false ? false : true}
+                // 创作推广
+                isCreate={isAD == false || isCreate == false ? false : true}
+                videoImage={isAD ? item.ad_info.creative_content.image_url : item.cover}
+                videoName={isAD ? item.ad_info.creative_content.title : item.title}
+                recommendReason={isAD == true || isRecm == false ? null : item.rcmd_reason}
+                recommendDesc={isAD == true || isRcDesc == false ? null : item.desc}
+                cover_left_icon_1={isAD ? null : item.cover_left_icon_1}
+                cover_left_icon_2={isAD ? null : item.cover_left_icon_2}
+                // 播放量
+                cover_left_text_1={isAD ? null : item.cover_left_text_1}
+                // 弹幕数
+                cover_left_text_2={isAD ? null : item.cover_left_text_2}
+                // 视频时长
+                cover_right_text={isAD ? null : item.cover_right_text}
+            />
         )
     }
     render() {
@@ -116,54 +179,26 @@ export class RecommendScreen extends Component {
             <View style={styles.container}>
                 <View style={{ flex: 1, padding: 3 }}>
                     <FlatList
+                        showsVerticalScrollIndicator={false}
                         ListHeaderComponent={this.renderBanner}
                         initialNumToRender={8}
                         numColumns={2}
                         data={this.state.videoArr}
-                        renderItem={({ item }) => {
-                            var isItem = item != null ? item : null
-                            // 判断是不是广告类
-                            var isAD = item.ad_info != null && item.ad_info.extra ? true : false
-                            // 判断是不是广告类条目的广告 = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
-                            var isGuangGao
-                            // 判断是不是广告类条目的创作推广 = isAD == true && item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
-                            var isCreate
-                            if (isAD == true) {
-                                isGuangGao = item.ad_info.extra.card.ad_tag_style.text == "广告" ? true : false
-                                isCreate = item.ad_info.extra.card.ad_tag_style.text == "创作推广" ? true : false
-                            } else {
-                                isGuangGao = false
-                                isCreate = false
-                            }
-                            // 判断是不是视频类条目的推荐视频、已关注
-                            var isRecm = item.rcmd_reason != null ? true : false
-                            // 判断是不是视频类条目的番剧、文章、直播
-                            var isBadeg = item.badge != null ? true : false
-                            // 判断是否有推荐描述
-                            var isRcDesc = item.desc != null ? true : false
-                            // 判断是不是在线观看视频
-                            var isInline = item.like_button != null ? true : false
-                            return (
-                                <ItemView
-                                    item={isItem}
-                                    isAd={isAD}
-                                    isBadeg={isAD == true || isBadeg == false ? false : true}
-                                    ad_info={isAD ? item.ad_info : null}
-                                    isDesc={isAD == true || isRecm == true || isInline == true ? false : true}
-                                    isGuangGao={isAD == false || isGuangGao == false ? false : true}
-                                    isCreate={isAD == false || isCreate == false ? false : true}
-                                    videoImage={isAD ? item.ad_info.creative_content.image_url : item.cover}
-                                    videoName={isAD ? item.ad_info.creative_content.title : item.title}
-                                    recommendReason={isAD == true || isRecm == false ? null : item.rcmd_reason}
-                                    recommendDesc={isAD == true || isRcDesc == false ? null : item.desc}
-                                    cover_left_icon_1={isAD ? null : item.cover_left_icon_1}
-                                    cover_left_icon_2={isAD ? null : item.cover_left_icon_2}
-                                    cover_left_text_1={isAD ? null : item.cover_left_text_1}
-                                    cover_left_text_2={isAD ? null : item.cover_left_text_2}
-                                    cover_right_text={isAD ? null : item.cover_right_text}
-                                />
-                            )
-                        }}
+                        renderItem={this.renderRecommendItem}
+                        // 下拉刷新
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={false}
+                                onRefresh={() => {
+                                    this.init()
+                                    isRefresh = true
+                                }}
+                                colors={[themeColor]}
+                            />
+                        }
+                        // 上拉加载
+                        onEndReached={this._onEndReached.bind(this)}
+                        onEndReachedThreshold={0.3}
                         keyExtractor={(item, index) => index}
                     />
                 </View>
@@ -173,7 +208,7 @@ export class RecommendScreen extends Component {
 
     // 获取推荐页数据
     async getRecommend() {
-        let response = await fetch('https://app.bilibili.com/x/v2/feed/index?access_key=f2f953baf17e769395be64cd260e7aa1&ad_extra=333A9F71DEB09C75C14655088F113F6F32E2D5C5D744E16C88EB6110456307B0B297ABA9B792546DED0CD675EE9FFA6F7F67E8D08B7466B9E3A710321E56D991728FECA4E14BC478E07D78508F8C3258B41C41DF0389B3DE0EB0446C2239F68628F8C1796724B4D58D480CC4087291775D583E7EBA812040F5A2DA175C7A72063435F733086C75F60C21A41B8E57623DFA1EE05C15829538238B18DF17DB2A5A521F51505D2A3842D66239CC0179FA2361A849BF2362BDEEC9C51858EB187E2739B18EC6000D4BEFA479C9CAAAA97A537728A275EFF65531F4A86A4BD9F057BA2FA01D907DB88562C51FFD5EB911FD993CBC57491DA13E308C0A9559C2EB95E9079DE32635D51F2D8139296BCB91A18A9EC96BB1E1D0FEABA5B8D64EC2CB610E242A35C0C1129AA781C03DC7015EB1E147028AF79B3A7275C97A9A4E8D8C99151D59D1C086341FEC6102194A0DE091E4C322E6CA2344A42BECA95492A8B6F1D8ACF2AAEDD70AD7D5F3F2D9755AFCC4A42B0D58E3496E6AEC230F2B5C8127F1FBA43B7C77D31667D3E1CE42A0A2FD8F8238FD10F9636236D5F3B4C4899DC0448E5CAA0A0E3F10BDD8A35A7CB34BDDAC34A0392E884C028986652D7383B47815C0CE2340CD3231DE8F3B290118D68D67ABC4D338CAA73CF5465E07E0519ADA6ED065810D608B0E7A6E3CD1BEA2E075B9B47D9D2C5B952E782F61F7AD0AC1F92DC4748EB8251E258A7BF330F6A48F190089&appkey=1d8b6e7d45233436&autoplay_card=2&build=6100500&c_locale=zh_CN&channel=bili&column=2&device_name=MI%209&device_type=0&flush=0&fnval=16&fnver=0&force_host=0&fourk=0&guidance=0&https_url_req=0&idx=0&login_event=2&mobi_app=android&network=wifi&open_event=cold&platform=android&pull=true&qn=32&recsys_mode=0&s_locale=zh_CN&splash_id=&statistics=%7B%22appId%22%3A1%2C%22platform%22%3A3%2C%22version%22%3A%226.10.0%22%2C%22abtest%22%3A%22%22%7D&ts=1603940345&sign=17e765fce9f93983880980e0aebf7311')
+        let response = await fetch('https://app.bilibili.com/x/v2/feed/index?access_key=dad61b7bf4b5fe18ecddeedd9f67a3c1&ad_extra=333A9F71DEB09C75C14655088F113F6F32E2D5C5D744E16C88EB6110456307B0B297ABA9B792546DED0CD675EE9FFA6F7F67E8D08B7466B9E3A710321E56D991728FECA4E14BC478E07D78508F8C3258B41C41DF0389B3DE0EB0446C2239F68628F8C1796724B4D58D480CC4087291775D583E7EBA812040F5A2DA175C7A72063435F733086C75F60C21A41B8E57623DFA1EE05C15829538238B18DF17DB2A5A521F51505D2A3842D66239CC0179FA2361A849BF2362BDEEC9C51858EB187E2739B18EC6000D4BEFA479C9CAAAA97A537728A275EFF65531F4A86A4BD9F057BA2FA01D907DB88562C51FFD5EB911FD993CBC57491DA13E308C0A9559C2EB95E9079DE32635D51F2D8139296BCB91A18A9EC96BB1E1D0FEABA5B8D64EC2CB610E242A35C0C1129AA781C03DC7015EB1E147028AF79B3A7275C97A9A4E8D8C99151D59D1C086341FEC6102194A0DE091E4C322E6CA2344A42BECA95492A8B6F1D8ACF2AAEDD70AD7D5F3F2D9755AFCC4A42B0D58E3496E6AEC230F2B5C8127F1FBA43B7C77D31667D3E1CE42A0A2FD8F8238FD10F9636236D5F3B4C4899DC0448E5CAA0A0E3F10BDD8A35A7CB34BDDAC34A0392E884C028986652D7383B47815C0CE2340CD3231DE8F3B290118D68D67ABC4D338CAA73CF5465E07E0519ADA6ED065810D608B0E7A6E3CD1BEA2E075B9B47D9D2C5B952E782F61F7AD0AC1F92DC4748EB8251E258A7BF330F6A48F190089&appkey=1d8b6e7d45233436&autoplay_card=2&build=6100500&c_locale=zh_CN&channel=bili&column=2&device_name=MI%209&device_type=0&flush=0&fnval=16&fnver=0&force_host=0&fourk=0&guidance=0&https_url_req=0&idx=0&login_event=2&mobi_app=android&network=wifi&open_event=cold&platform=android&pull=true&qn=32&recsys_mode=0&s_locale=zh_CN&splash_id=&statistics=%7B%22appId%22%3A1%2C%22platform%22%3A3%2C%22version%22%3A%226.10.0%22%2C%22abtest%22%3A%22%22%7D&ts=1606974917&sign=6062bb6a8a4b1bb7554c755fd132ab6f')
         let responseJson = await response.json();
         let recommend = responseJson.data.items;
         return recommend;
@@ -182,12 +217,27 @@ export class RecommendScreen extends Component {
     // await必须写在async方法里
     async init() {
         let recommend = await this.getRecommend()
-        let bannerArr = recommend[0].banner_item
-        recommend.splice(0, 1)
+        let bannerArr = recommend[0].banner_item // 轮播数据
+        recommend.splice(0, 1) //视频数据
+        // 如果页面没被刷新过，才需要设置轮播数据
+        if (!isRefresh) {
+            this.setState({
+                bannerArr: bannerArr
+            })
+        }
         this.setState({
             videoArr: recommend,
-            bannerArr: bannerArr
         });
+    }
+
+    // 上拉加载
+    async _onEndReached() {
+        let recommend = await this.getRecommend()
+        recommend.splice(0, 1) //视频数据
+        // 将新数组的数据添加到原来的数组上
+        this.setState({
+            videoArr: this.state.videoArr.concat(recommend)
+        })
     }
 
     componentDidMount() {
@@ -291,3 +341,28 @@ const styles = StyleSheet.create({
         textAlign: "left"
     }
 })
+
+// 路由器
+export const RecommendStark = createAppContainer(
+    createStackNavigator(
+        {
+            Recommend: { screen: RecommendScreen },
+            VideoPlay: { screen: VideoPlay }
+        },
+        {
+            defaultNavigationOptions: {
+                headerShown: false
+            }
+        }
+    )
+);
+
+RecommendStark.navigationOptions = ({ navigation }) => {
+    let tarBarVisible = true;
+    if (navigation.state.index > 0) {
+        tarBarVisible = false;
+    }
+    return {
+        tarBarVisible,
+    };
+};
