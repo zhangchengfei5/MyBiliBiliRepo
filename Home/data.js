@@ -1,6 +1,8 @@
+import moment from 'moment';
+
 export const dataAd = []
 
-export const tag = []
+// export const tag = []
 
 export const themeColor = '#E67F9F'
 
@@ -13,5 +15,35 @@ export const recommendList = [
     { videoName: "【Animenz】unravel   钢琴版", videoImage: require('./images/video6.png'), recommendReason: "已关注", recommendTitle: "Animenzzz", broadcastnum: "1051.6万", barragenum: "23万", videoTime: "3:52", key: "5" },
 ]
 
-// 0:profileUrl
+// 0:profileUrl 1:param 2:up主的id 3:评论的评论
 export var videoData = []
+
+export var dealNum = (num) => {
+    // 保留小数点后一位
+    var numWan = (num / 10000).toFixed(1)
+    // 处理32.0的情况
+    var arr = numWan.toString().split(".")
+    var wan = arr[1] == 0 ? parseInt(num / 10000) : (num / 10000).toFixed(1)
+    return (num / 10000 >= 1 ? wan + "万" : num)
+}
+
+export var dealTime = (time) => {
+    // console.log(time)
+    var diff_m = moment().diff(moment(time * 1000), "minutes")
+    var diff_h = moment().diff(moment(time * 1000), "hours")
+    var diff_d = moment().diff(moment(time * 1000), "days")
+    // 昨天零点的时间戳
+    var yestoday = moment().startOf("day") - 1000 * 60 * 60 * 24
+    // console.log(diff_d)
+    var t = ""
+    if (diff_m < 60) {
+        t = diff_m + "分钟前"
+    } else if (diff_h < 24) {
+        t = diff_h + "小时前"
+    } else if (time * 1000 >= yestoday) {
+        t = "昨天"
+    } else {
+        t = moment(time * 1000).format("MM-DD")
+    }
+    return t
+}

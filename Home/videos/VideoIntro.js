@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { Circle, Svg } from 'react-native-svg';
-import moment from 'moment';
-import { themeColor, videoData, tag } from '../data';
+import { themeColor, videoData, dealNum, dealTime } from '../data';
 
 class ItemView extends Component {
     render() {
@@ -21,9 +20,9 @@ class ItemView extends Component {
                             </View>
                             <View style={{ flexDirection: "row" }}>
                                 <Image style={{ width: 15, height: 15 }} source={require('../images/bdn_v.png')} />
-                                <Text style={style.videoIntroText}>{this.props.broadcastnum}</Text>
+                                <Text style={style.videoIntroText}>{dealNum(this.props.broadcastnum)}</Text>
                                 <Image style={{ width: 15, height: 15, marginLeft: 10 }} source={require('../images/ban_v.png')} />
-                                <Text style={style.videoIntroText}>{this.props.barragenum}</Text>
+                                <Text style={style.videoIntroText}>{dealNum(this.props.barragenum)}</Text>
                                 <View style={{ flexDirection: "row-reverse", flex: 1 }}>
                                     <Image style={{ width: 10, height: 10 }} source={require('../images/ellipsis_v.png')} />
                                 </View>
@@ -44,7 +43,7 @@ class ItemView extends Component {
     }
 }
 
-var profileUrl = ""
+const circleLen = Math.ceil(2 * Math.PI * 11)
 
 export class VideoIntro extends Component {
     constructor(props) {
@@ -58,10 +57,30 @@ export class VideoIntro extends Component {
             profile_part2: [],
             profile_part3: [],
             tag: [],
+            tag_icon: [],
             sanlian: [0, 0, 0, 0, 0],
             isSanLian: false,
-            isShowCircle: false
+            isShowCircleEnd: false,
+            offset: circleLen
         }
+    }
+
+    // 一键三连动画方法
+    sanlianPress() {
+        var offset = circleLen
+        this.timer = setInterval(() => {
+            offset = offset - 10
+            this.setState({
+                offset: offset
+            })
+            if (offset < -2) {
+                // 清除定时器
+                this.timer && clearInterval(this.timer);
+                // 动画结束隐藏圈圈
+                this.setState({ isShowCircleEnd: true })
+                return
+            }
+        }, 10)
     }
 
     // 获取视频详情页的简介数据
@@ -86,12 +105,17 @@ export class VideoIntro extends Component {
         var profile_part3 = profile.relates
         // Tag
         var tag = profile.tag
+        // Tag的图标
+        var tag_icon = profile.t_icon
+        // 作者的id
+        videoData[2] = profile.owner.mid
         this.setState({
             profile_part0: profile_part0,
             profile_part1: profile_part1,
             profile_part2: profile_part2,
             profile_part3: profile_part3,
-            tag: tag
+            tag: tag,
+            tag_icon: tag_icon
         })
     }
 
@@ -201,36 +225,87 @@ export class VideoIntro extends Component {
                     <View style={{ flexDirection: "row", marginTop: 10, paddingVertical: 10, width: "100%" }}>
                         {data.map((item, index) => {
                             var iconSource
-                            if (index == 0)
-                                iconSource = this.state.isSanLian ? item.icon_h : item.icon
-                            else
-                                iconSource = this.state.isShowCircle ? item.icon_h : item.icon
+                            // 判断是否三连了
+                            if (this.state.isSanLian) {
+                                // 三连后的图标处理方式
+                                if (index == 0)
+                                    iconSource = item.icon_h
+                                else if (index == 2 || index == 3)
+                                    iconSource = this.state.isShowCircleEnd ? item.icon_h : item.icon
+                                else
+                                    iconSource = item.icon
+                            } else {
+                                // 三连前的图标处理方式
+                                iconSource = this.state.sanlian[index] > 0 ? item.icon_h : item.icon
+                            }
                             return (
                                 <View key={index} style={{ flex: 1, alignItems: "center" }}>
                                     <TouchableOpacity style={{ alignItems: "center" }}
                                         // 点赞、投币、收藏等数量+1
                                         onPress={() => {
-                                            if (this.state.sanlian[index] < 1) {
+                                            // 当三连后
+                                            if (this.state.isSanLian) {
                                                 var arr0 = this.state.sanlian
-                                                arr0[index] = this.state.sanlian[index] + 1
-                                                this.setState({ sanlian: arr0 })
+                                                if (index == 0 || index == 2 || index == 3) {
+                                                    if (arr0[index] < 1) {
+                                                        arr0[index] = this.state.sanlian[index] + 1
+                                                        this.setState({ sanlian: arr0 })
+                                                    } else {
+                                                        // 点了之后图标变灰取消三连状态
+                                                        arr0[index] = this.state.sanlian[index] - 1
+                                                        this.setState({ sanlian: arr0, isSanLian: false })
+                                                    }
+                                                } else {
+                                                    if (arr0[index] < 1) {
+                                                        arr0[index] = this.state.sanlian[index] + 1
+                                                        this.setState({ sanlian: arr0 })
+                                                    } else {
+                                                        arr0[index] = this.state.sanlian[index] - 1
+                                                        this.setState({ sanlian: arr0 })
+                                                    }
+                                                }
                                             } else {
+                                                // 当还没三连
                                                 var arr1 = this.state.sanlian
-                                                arr1[index] = this.state.sanlian[index] - 1
-                                                this.setState({ sanlian: arr1 })
+                                                if (this.state.sanlian[index] < 1) {
+                                                    var arr1 = this.state.sanlian
+                                                    arr1[index] = this.state.sanlian[index] + 1
+                                                    this.setState({ sanlian: arr1 })
+                                                } else {
+                                                    arr1[index] = this.state.sanlian[index] - 1
+                                                    this.setState({ sanlian: arr1 })
+                                                }
                                             }
                                         }}
-                                        onLongPress={() => {
-                                            if (index == 0) {
-                                                this.setState({ isSanLian: true })
+                                        // 长按一键三连
+                                        onLongPress={async () => {
+                                            if (!this.state.isSanLian) {
+                                                if (index == 0) {
+                                                    await this.sanlianPress()
+                                                    var arr2 = this.state.sanlian
+                                                    arr2[0] = this.state.sanlian[0] + 1
+                                                    arr2[2] = this.state.sanlian[2] + 1
+                                                    arr2[3] = this.state.sanlian[3] + 1
+                                                    this.setState({
+                                                        isSanLian: true,
+                                                        sanlian: arr2
+                                                    })
+                                                }
                                             }
                                         }}
+                                        // 取消点击时一开始的透明化
                                         activeOpacity={1}
                                     >
-                                        {/* <Svg style={{ marginTop: -26, position: "relative", top: 25, opacity: index == 2 || index == 3 ? 1 : 0 }} width={30} height={30}>
-                                            <Circle cx={15} cy={15} r={11} stroke={themeColor} strokeWidth={1} />
-                                        </Svg> */}
-                                        <Image style={{ width: 20, height: 20 }} source={this.state.sanlian[index] == 1 ? item.icon_h : item.icon} />
+                                        <Svg style={{ marginTop: -26, position: "relative", top: 25, opacity: index == 2 || index == 3 ? 1 : 0 }} width={30} height={30}>
+                                            <Circle
+                                                cx={15} cy={15} r={11}
+                                                stroke={this.state.isShowCircleEnd ? "transparent" : themeColor}
+                                                strokeWidth={1}
+                                                strokeDasharray={circleLen}
+                                                strokeDashoffset={this.state.offset}
+                                            />
+                                        </Svg>
+                                        <Image style={{ width: 20, height: 20 }} source={iconSource} />
                                         <Text style={style.likeText}>{item.text}</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -244,13 +319,16 @@ export class VideoIntro extends Component {
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <View style={{ flexDirection: "row", flex: 1, flexWrap: "wrap", overflow: "hidden" }}>
                         {this.state.tag.map((item, index) =>
-                            <TouchableOpacity key={index} style={[style.tag_btn, index > 2 ? { display: this.state.isOpenTag ? "flex" : "none" } : { display: "flex" }]} onPress={() => { }}>
+                            <TouchableOpacity key={index} style={[style.tag_btn, index > 1 ? { display: this.state.isOpenTag ? "flex" : "none" } : { display: "flex" }]} onPress={() => { }}>
+                                <Image style={{ marginRight: 3, width: 10, height: 10, display: item.tag_type == "common" ? "none" : "flex" }}
+                                    source={{ uri: item.tag_type == "new" ? this.state.tag_icon.new.icon : this.state.tag_icon.act.icon }}
+                                />
                                 <Text numberOfLines={1} style={{ fontSize: 11, color: item.tag_type == "common" ? "#000" : themeColor }}>{item.tag_name}</Text>
                             </TouchableOpacity>
                         )}
                     </View>
-                    <View style={{ flexDirection: "row", alignSelf: "flex-start", marginTop: 14 }}>
-                        <Text style={{ display: this.state.isOpenTag ? "none" : "flex", fontSize: 11, color: "#b6b6b6", marginRight: 10 }}>更多{this.state.tag.length - 3}个</Text>
+                    <View style={{ display: this.state.tag.length > 2 ? "flex" : "none", flexDirection: "row", alignSelf: "flex-start", marginTop: 14 }}>
+                        <Text style={{ display: this.state.isOpenTag ? "none" : "flex", fontSize: 11, color: "#b6b6b6", marginRight: 10 }}>更多{this.state.tag.length - 2}个</Text>
                         {/* 展开或缩放简介 */}
                         <TouchableOpacity
                             style={{ top: 4 }}
@@ -282,14 +360,6 @@ export class VideoIntro extends Component {
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={this.renderIntro}
                     data={this.state.profile_part3}
-                    // data={[
-                    //     { videoName: "串烧周杰伦46首歌曲!来寻找属于你的回忆 | 吉他弹唱", videoImage: require('../images/video1.png'), recommendReason: "8千点赞", broadcastnum: "1.2万", barragenum: "753", videoTime: "3:24", key: "0" },
-                    //     { videoName: "【钢琴】 当商场里响起secret base ～君がくれたもの～", videoImage: require('../images/video2.png'), recommendReason: "已关注", broadcastnum: "43.2万", barragenum: "3542", videoTime: "6:53", key: "1" },
-                    //     { videoName: "厨师长教你：“红烧鸡腿肉”的家常做法，只需要电饭锅就行", videoImage: require('../images/video3.png'), recommendReason: "3万点赞", broadcastnum: "97.8万", barragenum: "1.8万", videoTime: "13:13", key: "2" },
-                    //     { videoName: "减肥成为全校最帅，只为向初恋复仇", videoImage: require('../images/video4.png'), recommendReason: "番剧", broadcastnum: "463.6万", barragenum: "3.4万", videoTime: "", key: "3" },
-                    //     { videoName: "感谢陪伴|21计算机考研|雨声|13小时", videoImage: require('../images/video5.png'), recommendReason: "直播", broadcastnum: "12.3万", barragenum: "2.7万", videoTime: "做到了吗-", key: "4" },
-                    //     { videoName: "【Animenz】unravel   钢琴版", videoImage: require('../images/video6.png'), recommendReason: "已关注", broadcastnum: "1051.6万", barragenum: "23万", videoTime: "3:52", key: "5" }
-                    // ]}
                     renderItem={({ item }) => {
                         return (
                             <ItemView
@@ -303,40 +373,9 @@ export class VideoIntro extends Component {
                     }}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                {/* </View> */}
             </View>
         )
     }
-}
-
-var dealNum = (num) => {
-    // 保留小数点后一位
-    var numWan = (num / 10000).toFixed(1)
-    // 处理32.0的情况
-    var arr = numWan.toString().split(".")
-    var wan = arr[1] == 0 ? parseInt(num / 10000) : (num / 10000).toFixed(1)
-    return (num / 10000 >= 1 ? wan + "万" : num)
-}
-
-var dealTime = (time) => {
-    console.log(time)
-    var diff_m = moment().diff(moment(time * 1000), "minutes")
-    var diff_h = moment().diff(moment(time * 1000), "hours")
-    var diff_d = moment().diff(moment(time * 1000), "days")
-    // 昨天零点的时间戳
-    var yestoday = moment().startOf("day") - 1000 * 60 * 60 * 24
-    console.log(diff_d)
-    var t = ""
-    if (diff_m < 60) {
-        t = diff_m + "分钟前"
-    } else if (diff_h < 24) {
-        t = diff_h + "小时前"
-    } else if (time * 1000 >= yestoday) {
-        t = "昨天"
-    } else {
-        t = moment(time * 1000).format("MM-DD")
-    }
-    return t
 }
 
 const style = StyleSheet.create({
@@ -360,7 +399,10 @@ const style = StyleSheet.create({
         marginTop: 5,
         // marginLeft: -3
     },
+    // tag按钮的样式
     tag_btn: {
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: "#f4f4f4",
         paddingHorizontal: 10,
         paddingVertical: 5,

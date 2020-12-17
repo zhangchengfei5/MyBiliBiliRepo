@@ -3,7 +3,7 @@ import { View, Text, Image, Dimensions, TextInput, TouchableOpacity, ToastAndroi
 import { createAppContainer } from "react-navigation";
 import { createMaterialTopTabNavigator } from "react-navigation-tabs"
 import { LivingScreen } from '../first/LivingScreen';
-import { RecommendStark } from '../first/RecommendScreen';
+import { RecommendStack } from '../first/RecommendScreen';
 import { HotScreen } from '../first/HotScreen';
 import { AnimationScreen } from '../first/AnimationScreen';
 
@@ -74,7 +74,7 @@ const FirstTab = createAppContainer(
                 }
             },
             Recommend: {
-                screen: RecommendStark,
+                screen: RecommendStack,
                 navigationOptions: {
                     tabBarLabel: ({ focused }) => renderTabBarLabel(1, focused)
                 }
@@ -110,6 +110,16 @@ const FirstTab = createAppContainer(
         }
     )
 )
+
+FirstTab.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 0) {
+        tabBarVisible = false;
+    }
+    return {
+        tabBarVisible,
+    };
+};
 
 function renderTabBarLabel(page, focused) {
     return <Text style={{

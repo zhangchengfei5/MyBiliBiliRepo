@@ -15,7 +15,6 @@ export class SplashAdScreen extends Component {
     }
     render() {
         var isVideo = (dataAd[4] != null)
-        // console.log(dataAd)
         return (
             <View style={{ flex: 1 }}>
                 <Image source={{ uri: dataAd[0] }} style={{ display: isVideo ? "none" : "flex", flex: 1, resizeMode: "stretch" }} />
@@ -48,10 +47,14 @@ export class SplashAdScreen extends Component {
                 duration: s
             })
             if (this.state.duration < 1) {
-                this.timer && clearInterval(this.timer);
+                // this.timer && clearInterval(this.timer);
                 this.props.navigation.navigate("Main")
                 return
             }
         }, 1000)
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.timer)
     }
 }

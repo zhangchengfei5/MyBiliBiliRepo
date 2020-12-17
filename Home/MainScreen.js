@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import { Image, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet, DeviceEventEmitter } from 'react-native';
 import { createAppContainer } from 'react-navigation'
+import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { FirstScreen } from './main/FirstScreen';
 import { PartitionScreen } from './main/PartitionScreen';
 import { UserScreen } from './main/UserScreen';
 import { DynamicScreen } from './main/DynamicScreen';
 import { themeColor } from './data';
-
 
 export const TabBarNavigator = createAppContainer(
     createBottomTabNavigator(
@@ -16,7 +16,7 @@ export const TabBarNavigator = createAppContainer(
                 screen: FirstScreen,
                 navigationOptions: {
                     tabBarIcon: ({ focused }) => renderTabBar("icon", 0, focused),
-                    tabBarLabel: ({ focused }) => renderTabBar("label", 0, focused)
+                    tabBarLabel: ({ focused }) => renderTabBar("label", 0, focused),
                 }
             },
             PartitionScreen: {

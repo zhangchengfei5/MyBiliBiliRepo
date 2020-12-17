@@ -69,40 +69,28 @@ export class SplashBrandScreen extends Component {
         await this.init();
         // 延时跳转
         this.timer = setTimeout(() => {
-            this.timer && clearTimeout(this.timer);
-            this.props.navigation.navigate("SplashAd",{navigation:this.props.navigation})
+            // this.timer && clearTimeout(this.timer);
+            this.props.navigation.navigate("SplashAd")
         }, 2000)
+    }
+
+    componentWillUnmount(){
+        clearTimeout(this.timer)
     }
 }
 
-export default Stark = 
+export default SplashStack =
     createAppContainer(
         createStackNavigator(
             {
-                SplashBrand:{screen:SplashBrandScreen},
-                SplashAd:{screen:SplashAdScreen},
-                Main:{screen:TabBarNavigator}
+                SplashBrand: { screen: SplashBrandScreen },
+                SplashAd: { screen: SplashAdScreen },
+                Main: { screen: TabBarNavigator }
             },
             {
-                defaultNavigationOptions:{
-                    headerShown:false
+                defaultNavigationOptions: {
+                    headerShown: false
                 }
             }
         )
     );
-
-// const Stack = createStackNavigator();
-
-// export default class SplashScreen extends Component {
-//     render() {
-//         return (
-//             <NavigationContainer>
-//                 <Stack.Navigator initialRouteName="SplashBrand" headerMode="none" options={{ headerShown: false }}>
-//                     <Stack.Screen name="SplashBrand" component={SplashBrandScreen} />
-//                     <Stack.Screen name="SplashAd" component={SplashAdScreen} />
-//                     <Stack.Screen name="Main" component={TabBarNavigator} />
-//                 </Stack.Navigator>
-//             </NavigationContainer>
-//         )
-//     }
-// }

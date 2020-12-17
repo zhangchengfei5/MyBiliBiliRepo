@@ -10,6 +10,7 @@ import { getVideoDetilUrl } from '../utils';
 
 // 获取屏幕的宽度
 var { width } = Dimensions.get('window')
+// 加评论总数，数据为：data.stat.reply
 var VideoLabel = ["简介", "评论"];
 
 export class VideoPlay extends Component {
@@ -20,14 +21,16 @@ export class VideoPlay extends Component {
             on: true
         }
     }
+    componentDidMount() {
+        // 发送消息给首页
+        DeviceEventEmitter.emit('searchHide', true)
+    }
     render() {
         // 获取上个页面传递过来的参数，并打印查看
         const param = this.props.navigation.state.params.param
         profileUrl = getVideoDetilUrl(param)
-        // console.log(getVideoDetilUrl(param))
         videoData[0] = profileUrl
-        // 发送消息给首页
-        DeviceEventEmitter.emit('searchHide', true)
+        videoData[1] = param
         return (
             <View style={{ flex: 1 }}>
                 <Video
