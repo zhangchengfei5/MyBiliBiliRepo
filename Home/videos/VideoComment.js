@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, RefreshControl, TouchableWithoutFeedback } from 'react-native';
-import { themeColor, videoData, dealTime, dealNum } from '../data';
+import { themeColor, videoData, dealTime, dealNum, getStrLength } from '../data';
 
 // 评论信息的最大字符串
 var maxLength = 6 * 20
 var kongGe = "  "
 
-class ItemView extends Component {
+class ItemView extends PureComponent {
     constructor(props) {
         super(props)
         this.state = {
@@ -38,7 +38,7 @@ class ItemView extends Component {
                         <View style={{ flexDirection: "row", alignItems: "center" }}>
                             <Text style={{ color: this.props.vipType == 2 ? themeColor : "#b6b6b6", fontSize: 12 }}>{this.props.uname}</Text>
                             <Image style={{ width: 20, height: 10, marginHorizontal: 5 }} source={levelIcon(this.props.level)} />
-                            <Image style={{ width: 18, height: 10, display: this.props.mid == videoData[2] ? "flex" : "none" }} source={require('../images/author.png')} />
+                            <Image style={{ width: 18, height: 10, display: this.props.mid == videoData[3] ? "flex" : "none" }} source={require('../images/author.png')} />
                         </View>
                         {/* 发言时间 */}
                         <Text style={{ color: "#b6b6b6", fontSize: 9, marginTop: 3 }}>{dealTime(this.props.ctime)}</Text>
@@ -96,7 +96,7 @@ class ItemView extends Component {
                                             <Text style={{ fontSize: 12, color: "#4d92cc" }}>{item.member.uname}</Text>
                                         </TouchableOpacity>
                                         <Text numberOfLines={2} style={{ fontSize: 12, paddingVertical: 0, lineHeight: 18 }}>
-                                            {kongGe.repeat(getStrLength(item.member.uname) + 1)}{": " + item.content.message}
+                                            {kongGe.repeat(getStrLength(item.member.uname) + 1)}{item.content.members.length > 0 ? "" : ": "}{item.content.message}
                                         </Text>
                                     </View>
                                 )
@@ -128,7 +128,7 @@ export class VideoComment extends Component {
 
     // 获取视频详情页的简介数据
     async getComment(isReplyHot, pn) {
-        const param = videoData[1]
+        const param = videoData[0]
         // let commentUrl = 'https://api.bilibili.com/x/v2/reply/main?oid=' + param + '&type=1' 
         let sort = isReplyHot ? 1 : 0
         let commentUrl = 'https://api.bilibili.com/x/v2/reply?oid=' + param + '&type=1&sort=' + sort + "&;pn=" + pn
@@ -141,7 +141,7 @@ export class VideoComment extends Component {
 
     // 获取置顶评论
     async getTopComment() {
-        const param = videoData[1]
+        const param = videoData[0]
         let topUrl = 'https://api.bilibili.com/x/v2/reply/main?oid=' + param + '&type=1'
         console.log(topUrl)
         let response = await fetch(topUrl)
@@ -256,13 +256,12 @@ export class VideoComment extends Component {
                     // 是否置顶
                     isTop={true}
                 />
-                <View style={{ width: "100%", height: 1, backgroundColor: "#f4f4f4" }}></View>
+                <View style={{ display: this.state.topComment.upper != null ? "flex" : "none", width: "100%", height: 1, backgroundColor: "#f4f4f4" }}></View>
             </View>
         )
     }
 
     render() {
-        // console.log(videoData[2])
         return (
             <View style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
                 <FlatList
@@ -323,12 +322,12 @@ export class VideoComment extends Component {
     }
 }
 
-// 获取当前字符串的长度
-function getStrLength(str) {
-    // 引用正则表达式
-    var cArr = str.match(/[^\x00-\xff]/ig);
-    return str.length + (cArr == null ? 0 : cArr.length);
-}
+// // 获取当前字符串的长度
+// function getStrLength(str) {
+//     // 引用正则表达式
+//     var cArr = str.match(/[^\x00-\xff]/ig);
+//     return str.length + (cArr == null ? 0 : cArr.length);
+// }
 
 // 用户的等级图标
 function levelIcon(level) {

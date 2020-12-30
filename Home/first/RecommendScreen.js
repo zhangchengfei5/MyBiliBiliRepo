@@ -6,7 +6,7 @@ import {
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import Swiper from 'react-native-swiper';
-import { themeColor } from '../data';
+import { themeColor, videoData } from '../data';
 import { VideoPlay } from '../videos/VideoPlay';
 import { getRecommendUrl } from '../utils';
 
@@ -18,8 +18,10 @@ class ItemView extends Component {
         return (
             <TouchableOpacity style={{ flex: 1 }} onPress={() => {
                 this.props.navigation.navigate('VideoPlay', {
-                    param: this.props.param
+                    cover: this.props.videoImage
                 })
+                videoData[0] = this.props.param
+                videoData[1] = this.props.cid
             }}>
                 <View style={styles.videoStyle}>
                     <Image source={{ uri: this.props.videoImage }} style={styles.imgStyle} />
@@ -152,6 +154,7 @@ export class RecommendScreen extends Component {
             <ItemView
                 navigation={this.props.navigation}
                 param={item.param}
+                cid={item.player_args != null ? item.player_args.cid : null}
                 item={isItem}
                 isAd={isAD}
                 isBadeg={isAD == true || isBadeg == false ? false : true}
@@ -209,7 +212,7 @@ export class RecommendScreen extends Component {
 
     // 获取推荐页数据
     async getRecommend() {
-        console.log("当前时间戳秒板"+new Date().getTime())
+        // 推荐页的URL在14天或14天后抓不到轮播图和各种多少万点赞的视频推荐原因都抓不到
         let response = await fetch(getRecommendUrl())
         let responseJson = await response.json();
         let recommend = responseJson.data.items;

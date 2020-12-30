@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { SplashAdScreen } from './SplashAdScreen';
-import { TabBarNavigator } from '../MainScreen';
+import { MainScreen } from '../MainScreen';
 import { dataAd } from '../data';
 
 export class SplashBrandScreen extends Component {
@@ -68,7 +68,7 @@ export class SplashBrandScreen extends Component {
         // 初始化页面
         await this.init();
         // 延时跳转
-        this.timer = setTimeout(() => {
+        this.timer = await setTimeout(() => {
             // this.timer && clearTimeout(this.timer);
             this.props.navigation.navigate("SplashAd")
         }, 2000)
@@ -85,7 +85,7 @@ export default SplashStack =
             {
                 SplashBrand: { screen: SplashBrandScreen },
                 SplashAd: { screen: SplashAdScreen },
-                Main: { screen: TabBarNavigator }
+                Main: { screen: MainScreen }
             },
             {
                 defaultNavigationOptions: {

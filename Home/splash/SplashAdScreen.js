@@ -38,10 +38,10 @@ export class SplashAdScreen extends Component {
             </View>
         )
     }
-    componentDidMount() {
+    async componentDidMount() {
         // 倒计时
         var s = this.state.duration
-        this.timer = setInterval(() => {
+        this.timer = await setInterval(() => {
             s--
             this.setState({
                 duration: s

@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component,PureComponent } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { Circle, Svg } from 'react-native-svg';
 import { themeColor, videoData, dealNum, dealTime } from '../data';
 
-class ItemView extends Component {
+class ItemView extends PureComponent {
     render() {
         return (
             <TouchableOpacity style={{ flex: 1 }} onPress={() => { }}>
@@ -69,7 +69,7 @@ export class VideoIntro extends Component {
     sanlianPress() {
         var offset = circleLen
         this.timer = setInterval(() => {
-            offset = offset - 10
+            offset = offset - 4
             this.setState({
                 offset: offset
             })
@@ -85,7 +85,7 @@ export class VideoIntro extends Component {
 
     // 获取视频详情页的简介数据
     async getProfile() {
-        let response = await fetch(videoData[0])
+        let response = await fetch(videoData[2])
         let responseJson = await response.json();
         let profile = responseJson.data;
         return profile;
@@ -108,7 +108,7 @@ export class VideoIntro extends Component {
         // Tag的图标
         var tag_icon = profile.t_icon
         // 作者的id
-        videoData[2] = profile.owner.mid
+        videoData[3] = profile.owner.mid
         this.setState({
             profile_part0: profile_part0,
             profile_part1: profile_part1,
@@ -319,7 +319,7 @@ export class VideoIntro extends Component {
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <View style={{ flexDirection: "row", flex: 1, flexWrap: "wrap", overflow: "hidden" }}>
                         {this.state.tag.map((item, index) =>
-                            <TouchableOpacity key={index} style={[style.tag_btn, index > 1 ? { display: this.state.isOpenTag ? "flex" : "none" } : { display: "flex" }]} onPress={() => { }}>
+                            <TouchableOpacity key={index} style={[style.tag_btn, index > 0 ? { display: this.state.isOpenTag ? "flex" : "none" } : { display: "flex" }]} onPress={() => { }}>
                                 <Image style={{ marginRight: 3, width: 10, height: 10, display: item.tag_type == "common" ? "none" : "flex" }}
                                     source={{ uri: item.tag_type == "new" ? this.state.tag_icon.new.icon : this.state.tag_icon.act.icon }}
                                 />
@@ -328,7 +328,7 @@ export class VideoIntro extends Component {
                         )}
                     </View>
                     <View style={{ display: this.state.tag.length > 2 ? "flex" : "none", flexDirection: "row", alignSelf: "flex-start", marginTop: 14 }}>
-                        <Text style={{ display: this.state.isOpenTag ? "none" : "flex", fontSize: 11, color: "#b6b6b6", marginRight: 10 }}>更多{this.state.tag.length - 2}个</Text>
+                        <Text style={{ display: this.state.isOpenTag ? "none" : "flex", fontSize: 11, color: "#b6b6b6", marginRight: 10 }}>更多{this.state.tag.length - 1}个</Text>
                         {/* 展开或缩放简介 */}
                         <TouchableOpacity
                             style={{ top: 4 }}
@@ -352,7 +352,7 @@ export class VideoIntro extends Component {
     }
 
     render() {
-        console.log(videoData[0])
+        console.log(videoData[2])
         return (
             <View style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 10 }}>
                 {/* 推荐视频列表 */}

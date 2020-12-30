@@ -22,7 +22,7 @@ export class FirstScreen extends Component {
     // render()后执行此方法
     componentDidMount() {
         // 设置监听
-        this.subscription = DeviceEventEmitter.addListener('searchHide', (message) =>
+        this.subscription = DeviceEventEmitter.addListener('showBar', (message) =>
             this.setState({ searchHide: message }))
     }
 

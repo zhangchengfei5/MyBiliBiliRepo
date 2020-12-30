@@ -2,8 +2,6 @@ import moment from 'moment';
 
 export const dataAd = []
 
-// export const tag = []
-
 export const themeColor = '#E67F9F'
 
 export const recommendList = [
@@ -15,8 +13,15 @@ export const recommendList = [
     { videoName: "【Animenz】unravel   钢琴版", videoImage: require('./images/video6.png'), recommendReason: "已关注", recommendTitle: "Animenzzz", broadcastnum: "1051.6万", barragenum: "23万", videoTime: "3:52", key: "5" },
 ]
 
-// 0:profileUrl 1:param 2:up主的id 3:评论的评论
+// 0:param 1:cid 2:profileUrl  3:up主的id
 export var videoData = []
+
+// 获取当前字符串的长度
+export function getStrLength(str) {
+    // 引用正则表达式
+    var cArr = str.match(/[^\x00-\xff]/ig);
+    return str.length + (cArr == null ? 0 : cArr.length);
+}
 
 export var dealNum = (num) => {
     // 保留小数点后一位

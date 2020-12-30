@@ -9,14 +9,42 @@ import { UserScreen } from './main/UserScreen';
 import { DynamicScreen } from './main/DynamicScreen';
 import { themeColor } from './data';
 
-export const TabBarNavigator = createAppContainer(
+var tabBarVisible = true
+export class MainScreen extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            tabBarVisible: true
+        }
+    }
+    // 组件渲染后
+    componentDidMount() {
+        // 设置监听
+        this.subscription = DeviceEventEmitter.addListener('showBar', (message) =>
+            this.setState({ tabBarVisible: !message }))
+    }
+    // 组件卸载后
+    componentWillUnmount() {
+        // 移除监听
+        this.subscription.remove()
+    }
+    // 渲染组件
+    render() {
+        tabBarVisible = this.state.tabBarVisible
+        return (
+            <TabBarNavigator />
+        )
+    }
+}
+
+const TabBarNavigator = createAppContainer(
     createBottomTabNavigator(
         {
             FirstScreen: {
                 screen: FirstScreen,
                 navigationOptions: {
                     tabBarIcon: ({ focused }) => renderTabBar("icon", 0, focused),
-                    tabBarLabel: ({ focused }) => renderTabBar("label", 0, focused),
+                    tabBarLabel: ({ focused }) => renderTabBar("label", 0, focused)
                 }
             },
             PartitionScreen: {
@@ -39,6 +67,11 @@ export const TabBarNavigator = createAppContainer(
                     tabBarIcon: ({ focused }) => renderTabBar("icon", 3, focused),
                     tabBarLabel: ({ focused }) => renderTabBar("label", 3, focused)
                 }
+            }
+        },
+        {
+            defaultNavigationOptions: ({ navigation }) => {
+                return ({ tabBarVisible: tabBarVisible })
             }
         }
     )
